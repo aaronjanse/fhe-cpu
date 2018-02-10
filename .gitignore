@@ -1,0 +1,9 @@
+.mypy_cache/
+.vscode/
+*.pyc
+
+cloud.data
+cloud.key
+cloud.out
+secret.key
+

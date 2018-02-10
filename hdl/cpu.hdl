@@ -1,0 +1,74 @@
+CHIP cpu {
+    IN instr_code_0, instr_code_1, instr_code_2, input_bit;
+    OUT out_code_0, out_code_1, instr_tape_dir;
+
+    PARTS:
+    not(in=instr_code_0, out=instr_modifies_tape) // does the intruction modify the tape?
+    and(a=instr_modifies_tape, b=not_is_jumping, out=should_modify_tape) // don't modify the tape if we are jumping
+    not(in=instr_code_1, out=move_or_set) // do we move the tape or xor the bit?
+    xor(a=head_value, b=instr_code_2, out=modified_head_value) // get the xor-ed bit
+    mux(a=modified_head_value, b=instr_code_2, sel=instr_code_1, out=calc_tape_value) // instr_code_1 ? xor-ed bit (as value to set) : instr_code_2 (as direction to move tape)
+    mux(a=calc_tape_value, b=input_bit, sel=uses_input, out=tape_input_value)
+    tape(should_modify=should_modify_tape, move_or_set=move_or_set, value=tape_input_value, out=head_value)
+
+
+    // forward jump register
+    or(a=start_forward_jump, b=end_forward_jump, out=should_set_forward_jump_reg)
+    bind(in=start_forward_jump, out=is_jumping_right_in_val)
+    register_false(should_set=should_set_forward_jump_reg, value=is_jumping_right_in_val, out=is_jumping_right)
+
+    // backward jump register
+    or(a=start_backward_jump, b=end_backward_jump, out=should_set_backward_jump_reg)
+    bind(in=start_backward_jump, out=is_jumping_backward_in_val)
+    register_false(should_set=should_set_backward_jump_reg, value=is_jumping_backward_in_val, out=is_jumping_left)
+
+    // bracket depth register. We support the minimum turing-complete boolf**k depth which is 8
+    // +depth brackets
+    and(a=is_left_bracket, b=is_jumping_right, out=should_inc_up_0)
+    and(a=is_right_bracket, b=is_jumping_left, out=should_inc_up_1)
+    or(a=should_inc_up_0, b=should_inc_up_1, out=should_inc_up)
+    // -depth brackets
+    and3(a=is_left_bracket, b=is_jumping_left, c=not_bracket_depth_is_zero, out=should_inc_down_0)
+    and3(a=is_right_bracket, b=is_jumping_right, c=not_bracket_depth_is_zero, out=should_inc_down_1)
+    or(a=should_inc_down_0, b=should_inc_down_1, out=should_inc_down)
+    // bringing it all together
+    or(a=should_inc_up, b=should_inc_down, out=should_modify_inc_reg)
+    bind(in=should_inc_up, out=inc_direction)
+    incrememting_register(should_modify=should_modify_inc_reg, down_or_up=inc_direction, out_is_zero=bracket_depth_is_zero)
+
+
+    // detect brackets
+    implies(a=instr_code_0, b=instr_code_1, out=not_is_bracket)
+    not(in=not_is_bracket, out=is_bracket)
+    not(in=instr_code_2, out=not_instr_code_2)
+    and(a=is_bracket, b=not_instr_code_2, out=is_left_bracket)
+    and(a=is_bracket, b=instr_code_2, out=is_right_bracket)
+
+    // start forward jump
+    and3(a=is_left_bracket, b=not_is_jumping, c=inverse_head_value, out=start_forward_jump)
+    // end forward jump
+    and3(a=is_right_bracket, b=is_jumping_right, c=bracket_depth_is_zero, out=end_forward_jump)
+
+    // start backward jump
+    and(a=is_right_bracket, b=not_is_jumping, out=start_backward_jump)
+    // end backward jump
+    and3(a=is_left_bracket, b=is_jumping_left, c=bracket_depth_is_zero, out=end_backward_jump)
+
+
+    // io
+    and3(a=instr_code_0, b=instr_code_1, c=not_is_jumping, out=is_io_instrution)
+    and(a=is_io_instrution, b=not_instr_code_2, out=should_print)
+    bind(in=should_print, out=out_code_0)
+    and(a=is_io_instrution, b=instr_code_2, out=uses_input)
+    mux(a=head_value, b=uses_input, sel=instr_code_2, out=would_be_out_code_1)
+    and(a=would_be_out_code_1, b=is_io_instrution, out=out_code_1)
+
+
+    // util
+    not(in=head_value, out=inverse_head_value)
+    or(a=is_jumping_left, b=is_jumping_right, out=is_jumping)
+    not(in=is_jumping, out=not_is_jumping)
+    not(in=bracket_depth_is_zero, out=not_bracket_depth_is_zero)
+    
+    not(in=is_jumping_left, out=instr_tape_dir)
+}

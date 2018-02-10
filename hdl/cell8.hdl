@@ -1,0 +1,14 @@
+STATEFUL CHIP cell8 {
+    IN in_left, in_right, should_move, direction;
+    OUT out_left, out_right;
+
+    PARTS:
+    cell(in_left=in_left,      in_right=cell_in_R001, out_left=out_left,     out_right=cell_in_L001, should_move=should_move, direction=direction)
+    cell(in_left=cell_in_L001, in_right=cell_in_R002, out_left=cell_in_R001, out_right=cell_in_L002, should_move=should_move, direction=direction)
+    cell(in_left=cell_in_L002, in_right=cell_in_R003, out_left=cell_in_R002, out_right=cell_in_L003, should_move=should_move, direction=direction)
+    cell(in_left=cell_in_L003, in_right=cell_in_R004, out_left=cell_in_R003, out_right=cell_in_L004, should_move=should_move, direction=direction)
+    cell(in_left=cell_in_L004, in_right=cell_in_R005, out_left=cell_in_R004, out_right=cell_in_L005, should_move=should_move, direction=direction)
+    cell(in_left=cell_in_L005, in_right=cell_in_R006, out_left=cell_in_R005, out_right=cell_in_L006, should_move=should_move, direction=direction)
+    cell(in_left=cell_in_L006, in_right=cell_in_R007, out_left=cell_in_R006, out_right=cell_in_L007, should_move=should_move, direction=direction)
+    cell(in_left=cell_in_L007, in_right=in_right,     out_left=cell_in_R007, out_right=out_right,    should_move=should_move, direction=direction)
+}

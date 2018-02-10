@@ -1,0 +1,10 @@
+STATEFUL CHIP incrementing_register {
+    IN should_modify, down_or_up;
+    OUT out_is_zero;
+
+    PARTS:
+    or(a=out_is_zero, b=not_out_is_zero, out=true)
+    not(in=true, out=false)
+    cell64(in_left=true, in_right=false, out_left=not_out_is_zero, out_right=null, should_move=should_modify, direction=down_or_up)
+    not(in=not_out_is_zero, out=out_is_zero)
+}

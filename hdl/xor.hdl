@@ -1,0 +1,9 @@
+CHIP xor {
+    IN a, b;
+    OUT out;
+
+    PARTS:
+    nand(a=a, b=b, out=AnandB)
+    or(a=a, b=b, out=AorB)
+    and(a=AnandB, b=AorB, out=out)
+}

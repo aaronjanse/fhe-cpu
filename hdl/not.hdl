@@ -1,0 +1,7 @@
+CHIP not {
+    IN in;
+    OUT out;
+
+    PARTS:
+    nand(a=in, b=in, out=out)
+}

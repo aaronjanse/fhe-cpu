@@ -1,0 +1,15 @@
+STATEFUL CHIP tape {
+    IN should_modify, move_or_set, value;
+    OUT out;
+
+    PARTS:
+    mux(a=reg_out_left, b=reg_out_right, sel=value, out=head_reg_adj)
+    mux(a=head_reg_adj, b=value, sel=move_or_set, out=head_reg_in)
+
+    not(in=move_or_set, out=set_or_move)
+    and(a=should_modify, b=set_or_move, out=should_move)
+
+    cell64(in_left=out, in_right=out, out_left=reg_out_left, out_right=reg_out_right, should_move=should_move, direction=value)
+
+    register_false(should_set=should_modify, value=head_reg_in, out=out)
+}

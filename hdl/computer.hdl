@@ -1,0 +1,12 @@
+CHIP computer {
+    IN input_bit;
+    OUT code0, code1;
+
+    PARTS:
+    cpu(instr_code_0=instr_code_0, instr_code_1=instr_code_1, instr_code_2=instr_code_2, input_bit=input_bit, out_code_0=code0, out_code_1=code1, instr_tape_dir=instr_tape_dir)    
+
+
+    program_tape0(direction=instr_tape_dir, out=instr_code_0)
+    program_tape1(direction=instr_tape_dir, out=instr_code_1)
+    program_tape2(direction=instr_tape_dir, out=instr_code_2)
+}

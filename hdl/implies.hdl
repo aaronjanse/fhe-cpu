@@ -1,0 +1,8 @@
+CHIP implies {
+    IN a, b;
+    OUT out;
+
+    PARTS:
+    not(in=b, out=not_b)
+    nand(a=a, b=not_b, out=out)
+}

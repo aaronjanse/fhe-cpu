@@ -1,0 +1,11 @@
+STATEFUL CHIP cell {
+    IN in_left, in_right, should_move, direction;
+    OUT out_left, out_right;
+
+    PARTS:
+    mux(a=in_right, b=in_left, sel=direction, out=val)
+    register_false(should_set=should_move, value=val, out=reg_out)
+
+    bind(in=reg_out, out=out_left)
+    bind(in=reg_out, out=out_right)
+}
